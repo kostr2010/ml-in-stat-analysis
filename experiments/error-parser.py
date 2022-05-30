@@ -14,6 +14,7 @@ file_out = sys.argv[2]
 
 with open(file_in) as f:
     regex = re.compile(r'(\w+.\w+:\d+:\d+)(?:.*)\[CWE-(.*?)\]')
+    # TODO: add 'in function'
     for line in f.readlines():
         m = regex.findall(line)
         if (not m):
