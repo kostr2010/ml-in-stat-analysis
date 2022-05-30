@@ -13,13 +13,13 @@ file_in = sys.argv[1]
 file_out = sys.argv[2]
 
 with open(file_in) as f:
-    regex = re.compile(r'(\w+.\w+:\d+:\d+).*\[CWE-(.*?)\].*')
+    regex = re.compile(r'(\w+.\w+:\d+:\d+)(?:.*)\[CWE-(.*?)\]')
     for line in f.readlines():
-        mo1 = regex.findall(line)
-        if (not mo1):
+        m = regex.findall(line)
+        if (not m):
             continue
-        print(mo1)
-        mo2 = regex.match(line)
-        if (not mo2):
-            continue
-        print(mo2.group())
+        path = m[0][0]
+        cwe = m[0][1]
+
+        print(path)
+        print(cwe)

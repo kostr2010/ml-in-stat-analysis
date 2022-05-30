@@ -1,0 +1,6 @@
+[submodule "third-party/juliet-test-suite-c"]
+	path = third-party/juliet-test-suite-c
+	url = git@github.com:arichardson/juliet-test-suite-c.git
+[submodule "third-party/googletest"]
+	path = third-party/googletest
+	url = git@github.com:google/googletest.git
