@@ -5,10 +5,10 @@ import os
 import xml.etree.ElementTree as ET
 import numpy as np
 
-#############################################
+###############################################################
 # USE:
-# python3 dataset-dir juliet-dir TOKEN_WINDOW
-#############################################
+# python3 data-extractor.py dataset-dir juliet-dir TOKEN_WINDOW
+###############################################################
 
 assert(len(sys.argv) == 4)
 

@@ -10,6 +10,7 @@ TOKEN_WINDOW=25
 
 TOOL="ccsm"
 ANALYZER_GCC="gcc-10 -fanalyzer -Wanalyzer-too-complex"
+# ANALYZER_GCC="g++-11 -fanalyzer -Wanalyzer-too-complex"
 ANALYZER_CPPCHECK="cppcheck --std=c99 --max-ctu-depth=10 --xml"
 TOOL_ARGS="--exclude-std-headers --disable-file --disable-global"
 DUMP_TOKENS="--dump-tokens --output-format=none"
@@ -36,9 +37,6 @@ strip_win_files() {
 }
 
 CWE_DIRS="$(ls -d -- $(realpath $1/testcases/CWE*/))"
-# CWE_DIRS="/home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE415_Double_Free /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE416_Use_After_Free"
-
-# CWE_DIRS="/home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE190_Integer_Overflow"
 file_routine() {
     [[ $1 =~ (CWE[0-9]+_[A-Z,a-z,_]+__.+_[0-9]{2}) ]]
     EXECUTABLE_NAME=${BASH_REMATCH[0]}
