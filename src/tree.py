@@ -1,5 +1,7 @@
 #!/usr/local/bin/python3
+from base64 import encode
 from xmlrpc.client import boolean
+from torch import float32, float64
 import xgboost as xgb
 import pandas
 import sys
@@ -7,6 +9,10 @@ import re
 import csv
 import os
 import numpy as np
+from sklearn import tree
+from sklearn.metrics import accuracy_score, mean_squared_error
+from sklearn import linear_model
+from sklearn import preprocessing
 
 TRAIN_TEST_RATIO = 0.7
 
@@ -45,8 +51,48 @@ for cwe in cwe_list:
     test = pandas.concat(
         [test, data_cwe_t_test, data_cwe_f_test], ignore_index=True)
 
-print(train)
-print(test)
+train = train.fillna(0)
+test = test.fillna(0)
+
+X_train = train.to_numpy()[:, :-1]
+Y_train = train.iloc[:, -1:].transpose().to_numpy()[0]
+
+X_test = test.to_numpy()[:, :-1]
+Y_test = test.iloc[:, -1:].transpose().to_numpy()[0]
+
+# print(X_train)
+# print(Y_train)
+
+# print(X_test)
+# print(Y_test)
+Y_train_enc = []
+Y_test_enc = []
+for i in range(len(Y_train)):
+    if Y_train[i]:
+        Y_train_enc.append(1)
+    else:
+        Y_train_enc.append(0)
+
+for i in range(len(Y_test)):
+    if Y_test[i]:
+        Y_test_enc.append(1)
+    else:
+        Y_test_enc.append(0)
+
+clf = tree.DecisionTreeClassifier()
+clf.fit(X_train, Y_train_enc)
+Y_test_pred = clf.predict(X_test)
+
+print("Accuracy Score: {}".format(accuracy_score(Y_test_enc, Y_test_pred)))
+
+tree.plot_tree(clf)
+
+# print(train.columns[len(train.columns) - 1])
+# clf.fit(train.to_numpy()[0:-1], train.to_numpy()[-1])
+# clf.predict(test.to_numpy()[:-1])
+
+# print(train.to_numpy()[0:-1])
+# print(test.to_numpy()[:-1])
 
 # import xgboost as xgb
 # # read in data
