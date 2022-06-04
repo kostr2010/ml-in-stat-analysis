@@ -1,0 +1,32 @@
+---
+MainSourceFile:  /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE416_Use_After_Free/CWE416_Use_After_Free__malloc_free_int_01.c
+Diagnostics:     
+  - DiagnosticName:  misc-unused-parameters
+    Message:         'parameter ''argc'' is unused'
+    FileOffset:      2926
+    FilePath:        /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE416_Use_After_Free/CWE416_Use_After_Free__malloc_free_int_01.c
+    Replacements:    
+      - FilePath:        /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE416_Use_After_Free/CWE416_Use_After_Free__malloc_free_int_01.c
+        Offset:          2926
+        Length:          4
+        ReplacementText: ' /*argc*/'
+  - DiagnosticName:  clang-diagnostic-unused-parameter
+    Message:         'unused parameter ''argc'''
+    FileOffset:      2926
+    FilePath:        /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE416_Use_After_Free/CWE416_Use_After_Free__malloc_free_int_01.c
+    Replacements:    
+  - DiagnosticName:  misc-unused-parameters
+    Message:         'parameter ''argv'' is unused'
+    FileOffset:      2939
+    FilePath:        /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE416_Use_After_Free/CWE416_Use_After_Free__malloc_free_int_01.c
+    Replacements:    
+      - FilePath:        /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE416_Use_After_Free/CWE416_Use_After_Free__malloc_free_int_01.c
+        Offset:          2939
+        Length:          4
+        ReplacementText: ' /*argv*/'
+  - DiagnosticName:  clang-diagnostic-unused-parameter
+    Message:         'unused parameter ''argv'''
+    FileOffset:      2939
+    FilePath:        /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE416_Use_After_Free/CWE416_Use_After_Free__malloc_free_int_01.c
+    Replacements:    
+...

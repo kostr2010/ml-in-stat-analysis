@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results version="2">
+    <cppcheck version="2.7"/>
+    <errors>
+        <error id="doubleFree" severity="error" msg="Memory pointed to by &apos;data&apos; is freed twice." verbose="Memory pointed to by &apos;data&apos; is freed twice." cwe="415" file0="/home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE415_Double_Free/s01/CWE415_Double_Free__malloc_free_char_12.c">
+            <location file="/home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE415_Double_Free/s01/CWE415_Double_Free__malloc_free_char_12.c" line="45" column="9"/>
+            <location file="/home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE415_Double_Free/s01/CWE415_Double_Free__malloc_free_char_12.c" line="34" column="9"/>
+            <symbol>data</symbol>
+        </error>
+    </errors>
+</results>

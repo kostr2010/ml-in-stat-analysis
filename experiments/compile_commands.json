@@ -1,0 +1,7 @@
+[
+	{
+		"directory": "/home/kostr2010/cod/ml-in-stat-analysis/experiments",
+		"command": "/usr/local/bin/clang exp.c",
+		"file": "exp.c"
+	}
+]

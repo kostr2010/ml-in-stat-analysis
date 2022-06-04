@@ -1,0 +1,14 @@
+---
+MainSourceFile:  /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcasesupport/io.c
+Diagnostics:     
+  - DiagnosticName:  cert-err34-c
+    Message:         '''sscanf'' used to convert a string to an unsigned integer value, but function will not report conversion errors; consider using ''strtoul'' instead'
+    FileOffset:      2729
+    FilePath:        /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcasesupport/io.c
+    Replacements:    
+  - DiagnosticName:  cert-msc30-c
+    Message:         'rand() has limited randomness'
+    FileOffset:      4157
+    FilePath:        /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcasesupport/io.c
+    Replacements:    
+...
