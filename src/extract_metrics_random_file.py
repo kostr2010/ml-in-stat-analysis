@@ -22,71 +22,32 @@ dataset_dir = sys.argv[1]
 
 log_metrics = dataset_dir + "/metrics.csv"
 log_tokens = dataset_dir + "/tokens.txt"
-log_analyzer_gcc_good = dataset_dir + "/analyzer-gcc-good.txt"
-log_analyzer_gcc_bad = dataset_dir + "/analyzer-gcc-bad.txt"
-log_analyzer_cppcheck_good = dataset_dir + "/analyzer-cppcheck-good.xml"
-log_analyzer_cppcheck_bad = dataset_dir + "/analyzer-cppcheck-bad.xml"
-
-reg = re.compile(r'CWE(\d+)')
-true_cwe = int(reg.findall(dataset_dir)[0])
+log_analyzer_gcc = dataset_dir + "/analyzer-gcc.txt"
+log_analyzer_cppcheck = dataset_dir + "/analyzer-cppcheck.xml"
 
 #################################
 # parse gcc-10 -fanalyzer results
 #################################
 
 result_analyzer_gcc = []
-with open(log_analyzer_gcc_bad, "r") as f:
-    regex = re.compile(
-        r'/(CWE(\d+)_[\w,_]*__.*_\d\d.*.c):(\d+):\d+(?:.*)\[CWE-(.*?)\]')
+with open(log_analyzer_gcc, "r") as f:
+    regex = re.compile(r'(.*.[a-z]+):(\d+):(?:.*)\[CWE-(.*?)\]')
     regex_func = re.compile(r'.*In function ‘(.*?)’:$\n')
 
-    cur_file = ''
-    cur_line = ''
-    cur_func = ''
     cur_cwe = 0
+    cur_line = 0
+    cur_file = ''
+    cur_func = ''
 
     for line in f.readlines():
         m = regex.findall(line)
         if (m):
             cur_file = m[0][0]
-            cur_line = int(m[0][2])
-            cur_cwe = int(m[0][3])
-
-            if (cur_cwe != true_cwe):
-                continue
+            cur_line = int(m[0][1])
+            cur_cwe = int(m[0][2])
 
             result_analyzer_gcc.append(
-                [cur_file, cur_line, True, cur_cwe])
-
-        m = regex_func.findall(line)
-        if (m):
-            cur_func = m[0]
-
-with open(log_analyzer_gcc_good, "r") as f:
-    regex = re.compile(
-        r'/(CWE(\d+)_[\w,_]*__.*_\d\d.*.c):(\d+):\d+(?:.*)\[CWE-(.*?)\]')
-    regex_func = re.compile(r'.*In function ‘(.*?)’:$\n')
-
-    cur_file = ''
-    cur_line = ''
-    cur_func = ''
-    cur_cwe = 0
-
-    for line in f.readlines():
-        m = regex.findall(line)
-        if (m):
-            cur_file = m[0][0]
-            cur_line = int(m[0][2])
-            cur_cwe = int(m[0][3])
-
-            if (cur_cwe != true_cwe):
-                continue
-
-            print("GOT FP (GCC)! " + cur_file +
-                  ":" + str(cur_line) + " CWE-" + str(cur_cwe))
-
-            result_analyzer_gcc.append(
-                [cur_file, cur_line, False, cur_cwe])
+                [cur_file, cur_line, cur_cwe])
 
         m = regex_func.findall(line)
         if (m):
@@ -97,30 +58,14 @@ with open(log_analyzer_gcc_good, "r") as f:
 ########################
 
 result_analyzer_cppcheck = []
-tree = ET.parse(log_analyzer_cppcheck_bad)
+tree = ET.parse(log_analyzer_cppcheck)
 root = tree.getroot()
 for item in root.findall('./errors/error'):
     cur_cwe = int(item.get('cwe'))
-    if (cur_cwe != true_cwe):
-        continue
     for i in item.findall('./location'):
         cur_file = file = os.path.basename(i.get('file'))
         cur_line = int(i.get('line'))
-        result_analyzer_cppcheck.append([cur_file, cur_line, True, cur_cwe])
-
-tree = ET.parse(log_analyzer_cppcheck_good)
-root = tree.getroot()
-for item in root.findall('./errors/error'):
-    cur_cwe = int(item.get('cwe'))
-    if (cur_cwe != true_cwe):
-        continue
-    for i in item.findall('./location'):
-        cur_file = file = os.path.basename(i.get('file'))
-        cur_line = int(i.get('line'))
-        print("GOT FP (CPPCHECK)! " + cur_file +
-              ":" + str(cur_line) + " CWE-" + str(cur_cwe))
-        result_analyzer_cppcheck.append(
-            [cur_file, cur_line, False, cur_cwe])
+        result_analyzer_cppcheck.append([cur_file, cur_line, cur_cwe])
 
 ########################
 # merge analyzer results
@@ -159,14 +104,13 @@ class Func:
         self.line_start = line_start
         self.line_finish = line_finish
         self.idx = idx
-        # self.idx_end = idx_end
 
 
 result_tokens = []
 functions = []
 with open(log_tokens, "r") as f:
     regex_file = re.compile(r'Start lexing translation unit: (.*)')
-    regex_func = re.compile(r'\[fn:(.*(good|bad).*)@(\d+)-(\d+)')
+    regex_func = re.compile(r'\[fn:(.*)@(\d+)-(\d+)')
     regex_token = re.compile(r'\((\w+),(\d+),(\d+),(\d+),(\d+),(\d+)\)')
     cur_file = ''
     for line in f.readlines():
@@ -187,9 +131,8 @@ with open(log_tokens, "r") as f:
                 if present:
                     continue
 
-                is_good = m[0][1] == 'good'
-                line_start = int(m[0][2])
-                line_finish = int(m[0][3])
+                line_start = int(m[0][1])
+                line_finish = int(m[0][2])
                 functions.append(Func(cur_file, func_name, line_start,
                                       line_finish, len(result_tokens)))
             continue
@@ -200,6 +143,8 @@ with open(log_tokens, "r") as f:
                 for i in m:
                     result_tokens.append([i[1], i[4], i[5]])
             continue
+
+print(result_analyzer)
 
 #####################################
 # obtaining token window for each cwe
@@ -249,6 +194,9 @@ for r in range(len(result_analyzer)):
 
     assert(token_idx and token_idx_end)
 
+    print(token_idx)
+    print(token_idx_end)
+
     ##############################################################################
     # get context - [cwe_line_start - TOKEN_WINDOW, cwe_line_start + TOKEN_WINDOW]
     ##############################################################################
@@ -285,8 +233,11 @@ for r in range(len(result_analyzer)):
                 break
             idx -= 1
 
+    print(context)
+
     result_analyzer_extended.append(
         np.append(np.append(f_name, result_analyzer[r]), context))
+
 
 ####################
 # parse code metrics
@@ -302,10 +253,7 @@ with open(log_metrics, "r") as f:
         file = os.path.basename(r[0])
         r[0] = file
         func = r[1]
-        regex = re.compile(r'(CWE\d\d\d_[\w, _]*__.*_\d\d.*.c)')
-        m = regex.findall(file)
-        if (m):
-            result_metrics.append(r)
+        result_metrics.append(r)
 
 ###############
 # merge dataset

@@ -1,7 +1,0 @@
-WARNING: Proper support for C++ language constructs is not currently implementedIn file included from /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE416_Use_After_Free/CWE416_Use_After_Free__new_delete_wchar_t_62a.cpp:18:
-/home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcasesupport/std_testcase.h:58:10: fatal error: 'new' file not found
-#include <new> // for placement new
-         ^~~~~
-1 error generated.
-Error while processing /home/kostr2010/cod/ml-in-stat-analysis/third-party/juliet-test-suite-c/testcases/CWE416_Use_After_Free/CWE416_Use_After_Free__new_delete_wchar_t_62a.cpp.
-Tool.run returned 1
