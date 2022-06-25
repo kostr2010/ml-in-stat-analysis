@@ -9,11 +9,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import tree
 from sklearn import preprocessing
-from sklearn.metrics import accuracy_score, mean_squared_error
+from sklearn.metrics import accuracy_score, precision_score, recall_score
 from xgboost import XGBClassifier
 from sklearn.model_selection import GridSearchCV
 
-TRAIN_TEST_RATIO = 0.7
+TRAIN_TEST_RATIO = 0.8
 TOKEN_WINDOW = 25
 
 TOKENS = []
@@ -136,11 +136,16 @@ Y_test = Y_test * 1  # convert True, False to 1, 0
 # simple decision tree
 ######################
 
-clf = tree.DecisionTreeClassifier(max_depth=5, criterion="entropy")
+clf = tree.DecisionTreeClassifier(max_depth=4, criterion="entropy")
 clf.fit(X_train, Y_train)
 Y_test_pred = clf.predict(X_test)
 
 print("Accuracy Score Tree: {}".format(accuracy_score(Y_test, Y_test_pred)))
+print("Precision Tree: {}".format(
+    precision_score(Y_test, Y_test_pred, pos_label=0)))
+print("Recall Score Tree: {}".format(
+    recall_score(Y_test, Y_test_pred,  pos_label=0)))
+
 
 plt.figure()
 tree.plot_tree(clf, filled=True, feature_names=FEATURE_LABELS)
@@ -160,7 +165,7 @@ estimator = XGBClassifier(
 
 parameters = {
     'max_depth': range(2, 5, 1),
-    'n_estimators': range(5, 25, 20),
+    'n_estimators': range(5, 55, 10),
     'learning_rate': [0.1, 0.01, 0.05]
 }
 
@@ -180,6 +185,10 @@ xgb.plot_tree(grid_search.best_estimator_, filled=True, fmap='fmap.tsv')
 plt.savefig('xgboost-tree.pdf', format='pdf', bbox_inches="tight", dpi=1200)
 
 print("Accuracy Score XGBoost: {}".format(accuracy_score(Y_test, Y_predict)))
+print("Precision Score XGBoost: {}".format(
+    precision_score(Y_test, Y_predict, pos_label=0)))
+print("Recall Score XGBoost: {}".format(
+    recall_score(Y_test, Y_predict, pos_label=0)))
 
 ###################################
 # if input given, predict for input
@@ -217,8 +226,12 @@ if (len(sys.argv) == 3):
     test = test_data.fillna(0).to_numpy()
     test = preprocessing.normalize(test)
     predict = clf.predict(test)
+    proba = clf.predict_proba(test)
     print("predict tree")
     print(predict)
+    print(proba)
     predict = grid_search.best_estimator_.predict(test)
+    proba = grid_search.best_estimator_.predict_proba(test)
     print("predict xgboost")
     print(predict)
+    print(proba)
