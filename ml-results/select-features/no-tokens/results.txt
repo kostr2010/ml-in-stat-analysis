@@ -1,0 +1,6 @@
+Accuracy Score Tree: 0.8910133843212237
+Accuracy Score XGBoost: 0.8604206500956023
+predict tree
+[0 0 1]
+predict xgboost
+[1 0 0]

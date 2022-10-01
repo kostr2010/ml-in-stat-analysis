@@ -1,0 +1,21 @@
+exp.c: In function ‘a’:
+exp.c:12:14: warning: leak of ‘<unknown>’ [CWE-401] [-Wanalyzer-malloc-leak]
+   12 |     if (FIVE != 5) {
+      |         ~~~~~^~~~
+  ‘a’: events 1-4
+    |
+    |   11 |     data = (int*)calloc(100, sizeof(int));
+    |      |                  ^~~~~~~~~~~~~~~~~~~~~~~~
+    |      |                  |
+    |      |                  (1) allocated here
+    |   12 |     if (FIVE != 5) {
+    |      |        ~~~~~~~~~~ 
+    |      |        |     |
+    |      |        |     (4) ‘<unknown>’ leaks here; was allocated at (1)
+    |      |        (2) following ‘false’ branch...
+    |......
+    |   15 | }
+    |      | ~                 
+    |      | |
+    |      | (3) ...to here
+    |

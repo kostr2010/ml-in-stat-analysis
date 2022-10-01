@@ -1,0 +1,123 @@
+exp.c: In function ‘a’:
+exp.c:14:14: warning: leak of ‘<unknown>’ [CWE-401] [-Wanalyzer-malloc-leak]
+   14 |     if (FIVE == 5) {
+      |         ~~~~~^~~~
+  ‘a’: events 1-4
+    |
+    |   13 |     data = (int*)calloc(100, sizeof(int));
+    |      |                  ^~~~~~~~~~~~~~~~~~~~~~~~
+    |      |                  |
+    |      |                  (1) allocated here
+    |   14 |     if (FIVE == 5) {
+    |      |        ~~~~~~~~~~ 
+    |      |        |     |
+    |      |        |     (4) ‘<unknown>’ leaks here; was allocated at (1)
+    |      |        (2) following ‘false’ branch...
+    |......
+    |   17 | }
+    |      | ~                 
+    |      | |
+    |      | (3) ...to here
+    |
+exp.c: In function ‘fopen_good’:
+exp.c:29:1: warning: leak of FILE ‘fdata’ [CWE-775] [-Wanalyzer-file-leak]
+   29 | }
+      | ^
+  ‘fopen_good’: events 1-4
+    |
+    |   23 |     fdata = fopen("file.txt", "r");
+    |      |             ^~~~~~~~~~~~~~~~~~~~~~
+    |      |             |
+    |      |             (1) opened here
+    |   24 |     if (TRUE) {
+    |      |        ~     
+    |      |        |
+    |      |        (2) following ‘false’ branch...
+    |......
+    |   29 | }
+    |      | ~            
+    |      | |
+    |      | (3) ...to here
+    |      | (4) ‘fdata’ leaks here; was opened at (1)
+    |
+exp.c: In function ‘main’:
+exp.c:35:5: warning: double-‘free’ of ‘data’ [CWE-415] [-Wanalyzer-double-free]
+   35 |     free(data);
+      |     ^~~~~~~~~~
+  ‘main’: events 1-2
+    |
+    |   31 | int main()
+    |      |     ^~~~
+    |      |     |
+    |      |     (1) entry to ‘main’
+    |   32 | {
+    |   33 |     a();
+    |      |     ~~~
+    |      |     |
+    |      |     (2) calling ‘a’ from ‘main’
+    |
+    +--> ‘a’: events 3-8
+           |
+           |   11 | void a()
+           |      |      ^
+           |      |      |
+           |      |      (3) entry to ‘a’
+           |   12 | {
+           |   13 |     data = (int*)calloc(100, sizeof(int));
+           |      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           |      |          |       |
+           |      |          |       (4) allocated here
+           |      |          (5) allocated here
+           |   14 |     if (FIVE == 5) {
+           |      |        ~
+           |      |        |
+           |      |        (6) following ‘true’ branch...
+           |   15 |         free(data);
+           |      |         ~~~~~~~~~~
+           |      |         |
+           |      |         (7) ...to here
+           |      |         (8) first ‘free’ here
+           |
+    <------+
+    |
+  ‘main’: events 9-10
+    |
+    |   33 |     a();
+    |      |     ^~~
+    |      |     |
+    |      |     (9) returning to ‘main’ from ‘a’
+    |   34 |     fopen_good();
+    |      |     ~~~~~~~~~~~~
+    |      |     |
+    |      |     (10) calling ‘fopen_good’ from ‘main’
+    |
+    +--> ‘fopen_good’: events 11-13
+           |
+           |   19 | void fopen_good()
+           |      |      ^~~~~~~~~~
+           |      |      |
+           |      |      (11) entry to ‘fopen_good’
+           |......
+           |   24 |     if (TRUE) {
+           |      |        ~
+           |      |        |
+           |      |        (12) following ‘false’ branch...
+           |......
+           |   29 | }
+           |      | ~     
+           |      | |
+           |      | (13) ...to here
+           |
+    <------+
+    |
+  ‘main’: events 14-15
+    |
+    |   34 |     fopen_good();
+    |      |     ^~~~~~~~~~~~
+    |      |     |
+    |      |     (14) returning to ‘main’ from ‘fopen_good’
+    |   35 |     free(data);
+    |      |     ~~~~~~~~~~
+    |      |     |
+    |      |     (15) second ‘free’ here; first ‘free’ was at (8)
+    |
